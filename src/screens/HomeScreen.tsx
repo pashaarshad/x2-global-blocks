@@ -21,6 +21,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useProgressStore } from '../store/progressStore';
+import { audioManager } from '../engine/audioManager';
 
 const { width, height } = Dimensions.get('window');
 
@@ -109,6 +110,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const glowPulse = useSharedValue(0.5);
 
   useEffect(() => {
+    // Start menu music
+    audioManager.playMusic('menu');
+
     titleScale.value = withSpring(1, { damping: 8 });
     titleOpacity.value = withTiming(1, { duration: 500 });
 

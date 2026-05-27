@@ -23,6 +23,7 @@ import { COLORS, GRADIENTS } from '../constants/colors';
 import { StarRating } from '../components/StarRating';
 import { formatScore } from '../engine/scoreEngine';
 import { getLevelConfig, getTotalLevels } from '../engine/levelConfig';
+import { audioManager } from '../engine/audioManager';
 
 const { width, height } = Dimensions.get('window');
 
@@ -112,6 +113,9 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
   const bannerScale = useSharedValue(0);
 
   useEffect(() => {
+    // Play victory music
+    audioManager.playMusic('victory');
+
     // Trophy entrance
     trophyScale.value = withDelay(300, withSpring(1, { damping: 5, stiffness: 100 }));
     trophyRotation.value = withDelay(300, withSequence(

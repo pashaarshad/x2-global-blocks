@@ -26,6 +26,7 @@ import { GameGrid } from '../components/GameGrid';
 import { ScoreBar } from '../components/ScoreBar';
 import { NextBlockPreview } from '../components/NextBlockPreview';
 import { getComboMessage } from '../engine/scoreEngine';
+import { audioManager } from '../engine/audioManager';
 
 const { width } = Dimensions.get('window');
 
@@ -70,6 +71,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   // Init level
   useEffect(() => {
     initLevel(levelId);
+    // Switch to gameplay music
+    audioManager.playMusic('gameplay');
+    return () => {
+      audioManager.stopMusic();
+    };
   }, [levelId]);
 
   // Timer for timed levels
@@ -102,6 +108,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
       }, 600);
     } else if (gameStatus === 'lost') {
       if (timerRef.current) clearInterval(timerRef.current);
+      audioManager.stopMusic();
+      audioManager.playSfx('gameover');
       setTimeout(() => {
         navigation.replace('GameOver', {
           levelId,
@@ -115,7 +123,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
 
   // Show combo message
   useEffect(() => {
+    if (comboCount >= 1) {
+      audioManager.playSfx('merge');
+    }
     if (comboCount >= 2) {
+      audioManager.playSfx('combo');
       const msg = getComboMessage(comboCount);
       setComboMessage(msg);
       comboScale.value = withSequence(
@@ -134,6 +146,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
     (col: number) => {
       if (gameStatus !== 'playing') return;
       performDrop(col);
+      audioManager.playSfx('drop');
       setHighlightCol(undefined);
     },
     [gameStatus, performDrop]
@@ -143,6 +156,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
     if (gameStatus === 'playing') {
       setGameStatus('paused');
       setShowPauseModal(true);
+      audioManager.pauseMusic();
       if (timerRef.current) clearInterval(timerRef.current);
     }
   }, [gameStatus]);
@@ -150,6 +164,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   const handleResume = useCallback(() => {
     setShowPauseModal(false);
     setGameStatus('playing');
+    audioManager.resumeMusic();
   }, []);
 
   const handleRestart = useCallback(() => {
