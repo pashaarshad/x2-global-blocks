@@ -95,7 +95,7 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { levelId, score, stars, highestTile } = route.params;
+  const { levelId, score, stars, highestTile, winBonus = 0 } = route.params;
   const nextLevelId = levelId + 1;
   const hasNextLevel = nextLevelId <= getTotalLevels();
   const currentLevel = getLevelConfig(levelId);
@@ -206,12 +206,8 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
 
       {/* Title */}
       <Animated.View style={[styles.titleContainer, titleStyle]}>
-        <Text style={styles.titleLine1}>
-          {score > 0 ? 'NEW HIGH' : 'LEVEL'}
-        </Text>
-        <Text style={styles.titleLine2}>
-          {score > 0 ? 'SCORE!' : 'COMPLETE!'}
-        </Text>
+        <Text style={styles.titleLine1}>LEVEL</Text>
+        <Text style={styles.titleLine2}>COMPLETE!</Text>
       </Animated.View>
 
       {/* Trophy */}
@@ -226,8 +222,11 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
 
       {/* Score display */}
       <Animated.View style={[styles.scoreContainer, scoreStyle]}>
-        <Text style={styles.scoreLabel}>SCORE</Text>
+        <Text style={styles.scoreLabel}>TOTAL SCORE</Text>
         <Text style={styles.scoreValue}>{formatScore(score)}</Text>
+        {winBonus > 0 && (
+          <Text style={styles.bonusText}>+{winBonus} Win Bonus!</Text>
+        )}
         <Text style={styles.levelInfo}>
           Level {levelId} — {currentLevel?.name}
         </Text>
@@ -378,6 +377,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     marginTop: 2,
+  },
+  bonusText: {
+    color: COLORS.neonGreen,
+    fontSize: 14,
+    fontWeight: '800',
+    marginTop: 4,
+    letterSpacing: 0.5,
   },
   buttonsContainer: {
     width: width * 0.75,

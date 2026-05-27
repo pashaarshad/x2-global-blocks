@@ -88,13 +88,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   useEffect(() => {
     if (gameStatus === 'won') {
       if (timerRef.current) clearInterval(timerRef.current);
-      completeLevel(levelId, score, starsEarned);
+      const winBonus = currentLevel?.winPoints || 50;
+      const totalScore = score + winBonus;
+      completeLevel(levelId, totalScore, starsEarned);
       setTimeout(() => {
         navigation.replace('Victory', {
           levelId,
-          score,
+          score: totalScore,
           stars: starsEarned,
           highestTile,
+          winBonus,
         });
       }, 600);
     } else if (gameStatus === 'lost') {

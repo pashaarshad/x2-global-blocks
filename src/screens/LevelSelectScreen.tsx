@@ -1,5 +1,6 @@
 // X2 Global Blocks — Level Select Screen
-import React from 'react';
+// Handles 1000 levels with scrolling, grouped by difficulty tiers
+import React, { useRef, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, getBlockColor } from '../constants/colors';
-import { LEVELS, getDifficultyColor } from '../engine/levelConfig';
+import { LEVELS, getDifficultyColor, getDifficultyLabel } from '../engine/levelConfig';
 import { useProgressStore } from '../store/progressStore';
 import { StarRating } from '../components/StarRating';
 
@@ -19,14 +20,6 @@ const { width } = Dimensions.get('window');
 interface LevelSelectScreenProps {
   navigation: any;
 }
-
-const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: '🌱 BEGINNER',
-  easy: '🎯 EASY',
-  medium: '🔥 MEDIUM',
-  hard: '💀 HARD',
-  expert: '👑 EXPERT',
-};
 
 export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
   navigation,
@@ -42,9 +35,9 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
     return acc;
   }, {} as Record<string, typeof LEVELS>);
 
-  const difficulties = ['beginner', 'easy', 'medium', 'hard', 'expert'];
+  const difficulties = ['beginner', 'easy', 'medium', 'hard', 'expert', 'master', 'legend'];
 
-  const tileSize = (width - 60 - 30) / 4; // 4 columns with gaps
+  const tileSize = (Math.min(width, 500) - 60 - 30) / 5; // 5 columns for 1000 levels
 
   return (
     <LinearGradient
@@ -89,8 +82,13 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                 ]}
               >
                 <Text style={styles.difficultyLabel}>
-                  {DIFFICULTY_LABELS[diff] || diff.toUpperCase()}
+                  {getDifficultyLabel(diff)}
                 </Text>
+                <View style={styles.difficultyMeta}>
+                  <Text style={[styles.difficultyCount, { color: getDifficultyColor(diff) }]}>
+                    {levels.length} levels
+                  </Text>
+                </View>
                 <View
                   style={[
                     styles.difficultyLine,
@@ -114,8 +112,8 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                         styles.levelTile,
                         {
                           width: tileSize,
-                          height: tileSize + 20,
-                          opacity: unlocked ? 1 : 0.4,
+                          height: tileSize + 14,
+                          opacity: unlocked ? 1 : 0.35,
                         },
                       ]}
                       disabled={!unlocked}
@@ -151,7 +149,7 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                               {level.id}
                             </Text>
 
-                            {/* Goal tile */}
+                            {/* Goal tile badge */}
                             <View
                               style={[
                                 styles.goalMini,
@@ -166,7 +164,7 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                             {/* Stars */}
                             {completed && (
                               <View style={styles.starsContainer}>
-                                <StarRating stars={stars} size={12} />
+                                <StarRating stars={stars} size={10} />
                               </View>
                             )}
 
@@ -189,6 +187,27 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
             </View>
           );
         })}
+
+        {/* Points info */}
+        <View style={styles.pointsInfoCard}>
+          <Text style={styles.pointsInfoTitle}>🏅 WIN BONUS POINTS</Text>
+          <View style={styles.pointsGrid}>
+            {[
+              { label: '🌱 Beginner', pts: '50' },
+              { label: '🎯 Easy', pts: '75' },
+              { label: '🔥 Medium', pts: '100' },
+              { label: '💀 Hard', pts: '150' },
+              { label: '👑 Expert', pts: '200' },
+              { label: '🏆 Master', pts: '300' },
+              { label: '⚡ Legend', pts: '500' },
+            ].map((item) => (
+              <View key={item.label} style={styles.pointsRow}>
+                <Text style={styles.pointsLabel}>{item.label}</Text>
+                <Text style={styles.pointsValue}>+{item.pts}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
 
         <View style={styles.bottomPadding} />
       </ScrollView>
@@ -264,6 +283,13 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 2,
   },
+  difficultyMeta: {
+    marginLeft: 8,
+  },
+  difficultyCount: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
   difficultyLine: {
     flex: 1,
     height: 1,
@@ -274,10 +300,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    gap: 10,
+    gap: 8,
   },
   levelTile: {
-    borderRadius: 14,
+    borderRadius: 12,
     overflow: 'hidden',
     elevation: 4,
   },
@@ -285,42 +311,78 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.gridBorder,
-    padding: 4,
+    padding: 3,
   },
   lockIcon: {
-    fontSize: 24,
+    fontSize: 18,
   },
   levelNumber: {
     color: COLORS.textSecondary,
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '900',
   },
   goalMini: {
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginTop: 4,
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    marginTop: 2,
   },
   goalMiniText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: '800',
   },
   starsContainer: {
-    marginTop: 4,
+    marginTop: 2,
   },
   modeIndicators: {
     flexDirection: 'row',
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 3,
+    right: 3,
   },
   modeIcon: {
-    fontSize: 10,
-    marginLeft: 2,
+    fontSize: 8,
+    marginLeft: 1,
+  },
+  pointsInfoCard: {
+    backgroundColor: COLORS.bgCard,
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: COLORS.gridBorder,
+  },
+  pointsInfoTitle: {
+    color: COLORS.gold,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  pointsGrid: {
+    gap: 6,
+  },
+  pointsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  pointsLabel: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  pointsValue: {
+    color: COLORS.neonGreen,
+    fontSize: 14,
+    fontWeight: '800',
   },
   bottomPadding: {
     height: 40,

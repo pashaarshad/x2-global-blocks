@@ -129,7 +129,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     if (state.levelsCompleted.length === 0) return 1;
 
     const maxCompleted = Math.max(...state.levelsCompleted);
-    return maxCompleted + 1;
+    return Math.min(maxCompleted + 1, 1000);
   },
 
   isLevelUnlocked: (levelId: number) => {

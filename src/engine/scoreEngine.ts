@@ -1,4 +1,5 @@
 // X2 Global Blocks — Score Engine
+// Points system: Low=50, Medium=100, High=200, etc.
 
 export interface ScoreResult {
   baseScore: number;
@@ -42,6 +43,7 @@ export function formatScore(score: number): string {
  * Get a motivational message based on combo count
  */
 export function getComboMessage(comboCount: number): string {
+  if (comboCount >= 6) return '🔥 GODLIKE!';
   if (comboCount >= 5) return '🔥 INCREDIBLE!';
   if (comboCount >= 4) return '⚡ AMAZING!';
   if (comboCount >= 3) return '💥 AWESOME!';
@@ -54,7 +56,16 @@ export function getComboMessage(comboCount: number): string {
  */
 export function getGameOverMessage(score: number, goalTile: number, highestTile: number): string {
   const ratio = highestTile / goalTile;
-  if (ratio >= 0.5) return 'So close! Try again!';
-  if (ratio >= 0.25) return 'Getting there! Keep going!';
+  if (ratio >= 0.75) return 'So close! One more try!';
+  if (ratio >= 0.5) return 'Almost there! Keep going!';
+  if (ratio >= 0.25) return 'Getting better! Try again!';
   return 'Every try makes you better!';
+}
+
+/**
+ * Calculate total points for level completion
+ * Includes: gameplay score + win bonus points
+ */
+export function calculateTotalPoints(gameScore: number, winPoints: number): number {
+  return gameScore + winPoints;
 }
