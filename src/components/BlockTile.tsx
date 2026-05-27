@@ -1,13 +1,14 @@
 // X2 Global Blocks — Block Tile Component
+// With smooth drop animation like a train/car moving to position
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withSequence,
   withTiming,
-  withDelay,
+  Easing,
 } from 'react-native-reanimated';
 import { getBlockColor } from '../constants/colors';
 
@@ -17,6 +18,7 @@ interface BlockTileProps {
   isNew?: boolean;
   isMerging?: boolean;
   delay?: number;
+  dropDistance?: number; // How many rows to animate the fall
 }
 
 export const BlockTile: React.FC<BlockTileProps> = ({
@@ -25,23 +27,39 @@ export const BlockTile: React.FC<BlockTileProps> = ({
   isNew = false,
   isMerging = false,
   delay = 0,
+  dropDistance = 0,
 }) => {
-  const scale = useSharedValue(isNew ? 0.3 : 1);
-  const opacity = useSharedValue(isNew ? 0 : 1);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
   const glow = useSharedValue(0);
+  const translateY = useSharedValue(isNew && dropDistance > 0 ? -(dropDistance * size) : 0);
 
   const colors = getBlockColor(value);
 
   useEffect(() => {
-    if (isNew) {
-      scale.value = withDelay(
-        delay,
-        withSpring(1, { damping: 8, stiffness: 200 })
+    if (isNew && dropDistance > 0) {
+      // Smooth drop animation — block travels from top like a train
+      translateY.value = -(dropDistance * size);
+      translateY.value = withTiming(0, {
+        duration: Math.min(400, 80 + dropDistance * 50),
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+      // Small bounce on landing
+      scale.value = withSequence(
+        withTiming(1, { duration: Math.min(400, 80 + dropDistance * 50) }),
+        withTiming(1.15, { duration: 80 }),
+        withSpring(1, { damping: 8, stiffness: 300 })
       );
-      opacity.value = withDelay(delay, withTiming(1, { duration: 150 }));
+    } else if (isNew) {
+      // Fallback: scale-in animation for blocks without drop distance
+      scale.value = 0.3;
+      opacity.value = 0;
+      scale.value = withSpring(1, { damping: 8, stiffness: 200 });
+      opacity.value = withTiming(1, { duration: 150 });
     }
 
     if (isMerging) {
+      // Merge: pop + glow effect
       scale.value = withSequence(
         withTiming(1.3, { duration: 100 }),
         withSpring(1, { damping: 6, stiffness: 250 })
@@ -51,10 +69,13 @@ export const BlockTile: React.FC<BlockTileProps> = ({
         withTiming(0, { duration: 300 })
       );
     }
-  }, [isNew, isMerging]);
+  }, [isNew, isMerging, dropDistance]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
     opacity: opacity.value,
   }));
 

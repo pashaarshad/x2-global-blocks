@@ -1,4 +1,5 @@
 // X2 Global Blocks — Game Grid Component
+// With drop animation support — blocks visually fall from above to landing position
 import React, { useMemo } from 'react';
 import {
   StyleSheet,
@@ -28,7 +29,7 @@ export const GameGrid: React.FC<GameGridProps> = ({
   rows,
 }) => {
   const gridPadding = 12;
-  const gridWidth = SCREEN_WIDTH - 40;
+  const gridWidth = Math.min(SCREEN_WIDTH - 40, 500);
   const cellSize = Math.floor((gridWidth - gridPadding * 2) / cols);
   const gridHeight = cellSize * rows + gridPadding * 2;
 
@@ -70,10 +71,12 @@ export const GameGrid: React.FC<GameGridProps> = ({
               >
                 {cell && (
                   <BlockTile
+                    key={cell.id}
                     value={cell.value}
                     size={cellSize}
                     isNew={cell.isNew}
                     isMerging={cell.merging}
+                    dropDistance={cell.isNew ? rowIdx + 1 : 0}
                   />
                 )}
               </View>
@@ -124,6 +127,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 2,
+    overflow: 'hidden',
   },
   touchOverlay: {
     flexDirection: 'row',

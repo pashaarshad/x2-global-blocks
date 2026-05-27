@@ -148,13 +148,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }));
 
   const bgBlocks = [
-    { value: 2, x: 20, y: 80, size: 50, delay: 0, color: '#e74c3c' },
-    { value: 4, x: width - 80, y: 120, size: 45, delay: 500, color: '#2ecc71' },
-    { value: 8, x: 40, y: height * 0.4, size: 55, delay: 200, color: '#f39c12' },
-    { value: 16, x: width - 100, y: height * 0.35, size: 48, delay: 800, color: '#3498db' },
-    { value: 32, x: 60, y: height * 0.7, size: 42, delay: 400, color: '#9b59b6' },
-    { value: 64, x: width - 90, y: height * 0.65, size: 50, delay: 600, color: '#e84393' },
-    { value: 128, x: width * 0.5 - 25, y: height * 0.85, size: 46, delay: 1000, color: '#e67e22' },
+    { value: 2, x: 30, y: 100, size: 44, delay: 0, color: '#e74c3c' },
+    { value: 16, x: width - 90, y: height * 0.3, size: 40, delay: 600, color: '#3498db' },
+    { value: 64, x: 50, y: height * 0.6, size: 38, delay: 300, color: '#e84393' },
+    { value: 128, x: width - 80, y: height * 0.7, size: 42, delay: 900, color: '#e67e22' },
   ];
 
   return (
@@ -248,8 +245,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: -40,
+    marginBottom: 30,
+    marginTop: -20,
   },
   titleGlow: {
     position: 'absolute',
@@ -309,7 +306,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
   playButton: {
     width: '100%',
@@ -323,9 +321,10 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
   },
   playButtonGradient: {
-    paddingVertical: 18,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 22,
   },
   playButtonText: {
     color: COLORS.textPrimary,
@@ -336,6 +335,7 @@ const styles = StyleSheet.create({
   smallButtonsRow: {
     flexDirection: 'row',
     width: '100%',
+    marginTop: 4,
   },
   smallButton: {
     backgroundColor: COLORS.bgCard,

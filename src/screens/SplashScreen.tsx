@@ -10,7 +10,6 @@ import Animated, {
   withDelay,
   withSequence,
   Easing,
-  interpolate,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
@@ -28,30 +27,24 @@ const FloatingBlock: React.FC<{ value: number; startX: number; delay: number }> 
   startX,
   delay,
 }) => {
-  const translateY = useSharedValue(height);
+  const translateY = useSharedValue(height * 0.8);
   const opacity = useSharedValue(0);
-  const rotation = useSharedValue(0);
 
   useEffect(() => {
     translateY.value = withDelay(
       delay,
-      withTiming(-100, { duration: 4000, easing: Easing.linear })
+      withTiming(-100, { duration: 6000, easing: Easing.inOut(Easing.ease) })
     );
     opacity.value = withDelay(delay, withSequence(
-      withTiming(0.4, { duration: 500 }),
-      withTiming(0.4, { duration: 2500 }),
-      withTiming(0, { duration: 1000 })
+      withTiming(0.2, { duration: 800 }),
+      withTiming(0.15, { duration: 3500 }),
+      withTiming(0, { duration: 1700 })
     ));
-    rotation.value = withDelay(
-      delay,
-      withTiming(360, { duration: 4000, easing: Easing.linear })
-    );
   }, []);
 
   const style = useAnimatedStyle(() => ({
     transform: [
       { translateY: translateY.value },
-      { rotate: `${rotation.value}deg` },
     ],
     opacity: opacity.value,
     position: 'absolute',
@@ -72,16 +65,16 @@ const FloatingBlock: React.FC<{ value: number; startX: number; delay: number }> 
       style={[
         style,
         {
-          width: 40,
-          height: 40,
-          borderRadius: 8,
+          width: 32,
+          height: 32,
+          borderRadius: 7,
           backgroundColor: colors[value] || '#e74c3c',
           justifyContent: 'center',
           alignItems: 'center',
         },
       ]}
     >
-      <Text style={{ color: '#fff', fontWeight: '900', fontSize: 14 }}>
+      <Text style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '900', fontSize: 12 }}>
         {value}
       </Text>
     </Animated.View>
@@ -164,16 +157,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     opacity: glowOpacity.value,
   }));
 
-  // Floating particle positions
+  // Floating particle positions — subtle, just 3 particles
   const particles = [
-    { value: 2, x: width * 0.1, delay: 200 },
-    { value: 4, x: width * 0.3, delay: 600 },
-    { value: 8, x: width * 0.5, delay: 400 },
-    { value: 16, x: width * 0.7, delay: 800 },
-    { value: 32, x: width * 0.85, delay: 300 },
-    { value: 64, x: width * 0.15, delay: 1000 },
-    { value: 2, x: width * 0.6, delay: 1200 },
-    { value: 4, x: width * 0.4, delay: 1500 },
+    { value: 2, x: width * 0.12, delay: 500 },
+    { value: 8, x: width * 0.5, delay: 1000 },
+    { value: 32, x: width * 0.82, delay: 1500 },
   ];
 
   return (
