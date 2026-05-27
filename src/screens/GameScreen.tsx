@@ -154,6 +154,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
 
   const handlePause = useCallback(() => {
     if (gameStatus === 'playing') {
+      audioManager.playSfx('button');
       setGameStatus('paused');
       setShowPauseModal(true);
       audioManager.pauseMusic();
@@ -162,17 +163,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   }, [gameStatus]);
 
   const handleResume = useCallback(() => {
+    audioManager.playSfx('button');
     setShowPauseModal(false);
     setGameStatus('playing');
     audioManager.resumeMusic();
   }, []);
 
   const handleRestart = useCallback(() => {
+    audioManager.playSfx('button');
     setShowPauseModal(false);
     resetGame();
   }, []);
 
   const handleQuit = useCallback(() => {
+    audioManager.playSfx('button');
     setShowPauseModal(false);
     navigation.goBack();
   }, []);

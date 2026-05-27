@@ -26,23 +26,33 @@ export type SfxSound = 'drop' | 'merge' | 'combo' | 'gameover' | 'button';
 
 // Music tracks — uncomment when you add the files
 const MUSIC_SOURCES: Record<MusicTrack, any | null> = {
-  menu: null,       // Uncomment: require('../../assets/audio/bgm_menu.mp3'),
-  gameplay: null,    // Uncomment: require('../../assets/audio/bgm_gameplay.mp3'),
-  victory: null,     // Uncomment: require('../../assets/audio/bgm_victory.mp3'),
+  menu: require('../../assets/audio/bgm_menu.mp3'),
+  gameplay: require('../../assets/audio/bgm_gameplay.mp3'),
+  victory: require('../../assets/audio/bgm_victory.mp3'),
 };
 
 // Sound effects — uncomment when you add the files
 const SFX_SOURCES: Record<SfxSound, any | null> = {
-  drop: null,        // Uncomment: require('../../assets/audio/sfx_drop.mp3'),
-  merge: null,       // Uncomment: require('../../assets/audio/sfx_merge.mp3'),
-  combo: null,       // Uncomment: require('../../assets/audio/sfx_combo.mp3'),
-  gameover: null,    // Uncomment: require('../../assets/audio/sfx_gameover.mp3'),
-  button: null,      // Uncomment: require('../../assets/audio/sfx_button.mp3'),
+  drop: require('../../assets/audio/sfx_drop.mp3'),
+  merge: require('../../assets/audio/sfx_merge.mp3'),
+  combo: require('../../assets/audio/sfx_combo.mp3'),
+  gameover: require('../../assets/audio/sfx_gameover.mp3'),
+  button: require('../../assets/audio/sfx_button.mp3'),
+};
+
+// Maximum allowed duration (in milliseconds) for each sound effect to keep them short and crisp
+const SFX_DURATIONS: Record<SfxSound, number> = {
+  button: 800,     // 0.8 seconds limit for quick click
+  drop: 1000,      // 1.0 second limit for block drop
+  merge: 1200,     // 1.2 seconds limit for merge pop
+  combo: 1800,     // 1.8 seconds limit for combos
+  gameover: 4000,  // 4.0 seconds limit for game over cue
 };
 
 class AudioManager {
   private currentMusic: Audio.Sound | null = null;
   private currentTrack: MusicTrack | null = null;
+  private targetTrack: MusicTrack | null = null;
   private sfxPool: Map<string, Audio.Sound> = new Map();
   private musicEnabled: boolean = true;
   private sfxEnabled: boolean = true;
@@ -88,6 +98,7 @@ class AudioManager {
    * Play background music track (loops forever)
    */
   async playMusic(track: MusicTrack): Promise<void> {
+    this.targetTrack = track;
     if (!this.musicEnabled) return;
     
     const source = MUSIC_SOURCES[track];
@@ -156,6 +167,7 @@ class AudioManager {
 
     this.currentMusic = null;
     this.currentTrack = null;
+    this.targetTrack = null;
   }
 
   /**
@@ -186,6 +198,11 @@ class AudioManager {
    * Play a sound effect (fire-and-forget)
    */
   async playSfx(sound: SfxSound): Promise<void> {
+    // Automatically resolve browser autoplay blocks when any sound effect/button tap occurs
+    if (this.musicEnabled && this.targetTrack && !this.currentMusic) {
+      this.playMusic(this.targetTrack).catch(() => {});
+    }
+
     if (!this.sfxEnabled) return;
 
     const source = SFX_SOURCES[sound];
@@ -201,10 +218,33 @@ class AudioManager {
         shouldPlay: true,
       });
 
-      // Auto-cleanup after playing
+      let cleanedUp = false;
+      let stopTimeout: NodeJS.Timeout | null = null;
+
+      const cleanupSfx = async () => {
+        if (cleanedUp) return;
+        cleanedUp = true;
+        
+        if (stopTimeout) {
+          clearTimeout(stopTimeout);
+        }
+        
+        try {
+          await sfx.stopAsync();
+          await sfx.unloadAsync();
+        } catch (_) {
+          // Ignore any errors from double-cleanup or already-unloaded sounds
+        }
+      };
+
+      // Cap the duration based on the type of sound effect
+      const maxDuration = SFX_DURATIONS[sound] || 1500;
+      stopTimeout = setTimeout(cleanupSfx, maxDuration);
+
+      // Auto-cleanup if the audio naturally finishes before the timeout
       sfx.setOnPlaybackStatusUpdate((status) => {
         if (status.isLoaded && status.didJustFinish) {
-          sfx.unloadAsync();
+          cleanupSfx();
         }
       });
     } catch (e) {

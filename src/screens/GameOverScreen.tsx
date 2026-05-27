@@ -19,6 +19,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { formatScore, getGameOverMessage } from '../engine/scoreEngine';
+import { audioManager } from '../engine/audioManager';
 
 const { width } = Dimensions.get('window');
 
@@ -162,7 +163,10 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
         <Animated.View style={[styles.buttonsContainer, buttonsStyle]}>
           <TouchableOpacity
             style={styles.retryButton}
-            onPress={() => navigation.replace('Game', { levelId })}
+            onPress={() => {
+              audioManager.playSfx('button');
+              navigation.replace('Game', { levelId });
+            }}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -177,7 +181,10 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
           <TouchableOpacity
             style={styles.homeButton}
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => {
+              audioManager.playSfx('button');
+              navigation.navigate('Home');
+            }}
             activeOpacity={0.8}
           >
             <Text style={styles.homeButtonText}>🏠  HOME</Text>

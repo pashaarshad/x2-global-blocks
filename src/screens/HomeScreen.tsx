@@ -190,6 +190,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <TouchableOpacity
             style={styles.playButton}
             onPress={() => {
+              audioManager.playSfx('button');
               const nextLevel = getNextLevel();
               navigation.navigate('Game', { levelId: nextLevel });
             }}
@@ -210,7 +211,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Animated.View style={[levelsBtnStyle, { flex: 1, marginRight: 8 }]}>
             <TouchableOpacity
               style={styles.smallButton}
-              onPress={() => navigation.navigate('LevelSelect')}
+              onPress={() => {
+                audioManager.playSfx('button');
+                navigation.navigate('LevelSelect');
+              }}
               activeOpacity={0.8}
             >
               <Text style={styles.smallButtonIcon}>📋</Text>
@@ -221,7 +225,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Animated.View style={[settingsBtnStyle, { flex: 1, marginLeft: 8 }]}>
             <TouchableOpacity
               style={styles.smallButton}
-              onPress={() => navigation.navigate('Settings')}
+              onPress={() => {
+                audioManager.playSfx('button');
+                navigation.navigate('Settings');
+              }}
               activeOpacity={0.8}
             >
               <Text style={styles.smallButtonIcon}>⚙️</Text>

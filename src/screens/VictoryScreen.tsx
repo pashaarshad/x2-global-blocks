@@ -244,9 +244,10 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
         {hasNextLevel && (
           <TouchableOpacity
             style={styles.nextLevelButton}
-            onPress={() =>
-              navigation.replace('Game', { levelId: nextLevelId })
-            }
+            onPress={() => {
+              audioManager.playSfx('button');
+              navigation.replace('Game', { levelId: nextLevelId });
+            }}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -263,7 +264,10 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
         <View style={styles.secondaryButtons}>
           <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => navigation.replace('Game', { levelId })}
+            onPress={() => {
+              audioManager.playSfx('button');
+              navigation.replace('Game', { levelId });
+            }}
             activeOpacity={0.8}
           >
             <Text style={styles.secondaryButtonText}>🔄 REPLAY</Text>
@@ -271,7 +275,10 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
 
           <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => {
+              audioManager.playSfx('button');
+              navigation.navigate('Home');
+            }}
             activeOpacity={0.8}
           >
             <Text style={styles.secondaryButtonText}>🏠 HOME</Text>

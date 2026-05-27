@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useProgressStore } from '../store/progressStore';
+import { audioManager } from '../engine/audioManager';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -51,7 +52,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            audioManager.playSfx('button');
+            navigation.goBack();
+          }}
         >
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
@@ -77,7 +81,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             </View>
             <Switch
               value={settings.soundEnabled}
-              onValueChange={(v) => updateSettings({ soundEnabled: v })}
+              onValueChange={(v) => {
+                updateSettings({ soundEnabled: v });
+                audioManager.setSfxEnabled(v);
+                if (v) {
+                  audioManager.playSfx('button');
+                }
+              }}
               trackColor={{ false: COLORS.gridBorder, true: COLORS.neonBlue }}
               thumbColor={settings.soundEnabled ? '#fff' : COLORS.textMuted}
             />
@@ -92,7 +102,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             </View>
             <Switch
               value={settings.musicEnabled}
-              onValueChange={(v) => updateSettings({ musicEnabled: v })}
+              onValueChange={(v) => {
+                updateSettings({ musicEnabled: v });
+                audioManager.setMusicEnabled(v);
+                if (v) {
+                  audioManager.playMusic('menu');
+                }
+              }}
               trackColor={{ false: COLORS.gridBorder, true: COLORS.neonBlue }}
               thumbColor={settings.musicEnabled ? '#fff' : COLORS.textMuted}
             />
@@ -138,7 +154,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           <Text style={styles.sectionTitle}>⚠️ DATA</Text>
           <TouchableOpacity
             style={styles.resetButton}
-            onPress={handleReset}
+            onPress={() => {
+              audioManager.playSfx('button');
+              handleReset();
+            }}
             activeOpacity={0.7}
           >
             <Text style={styles.resetButtonText}>🗑️  Reset All Progress</Text>

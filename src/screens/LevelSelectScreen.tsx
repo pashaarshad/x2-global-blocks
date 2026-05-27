@@ -14,6 +14,7 @@ import { COLORS, GRADIENTS, getBlockColor } from '../constants/colors';
 import { LEVELS, getDifficultyColor, getDifficultyLabel } from '../engine/levelConfig';
 import { useProgressStore } from '../store/progressStore';
 import { StarRating } from '../components/StarRating';
+import { audioManager } from '../engine/audioManager';
 
 const { width } = Dimensions.get('window');
 
@@ -48,7 +49,10 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            audioManager.playSfx('button');
+            navigation.goBack();
+          }}
         >
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
@@ -117,9 +121,10 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                         },
                       ]}
                       disabled={!unlocked}
-                      onPress={() =>
-                        navigation.navigate('Game', { levelId: level.id })
-                      }
+                      onPress={() => {
+                        audioManager.playSfx('button');
+                        navigation.navigate('Game', { levelId: level.id });
+                      }}
                       activeOpacity={0.7}
                     >
                       <LinearGradient
