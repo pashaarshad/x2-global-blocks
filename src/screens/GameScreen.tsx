@@ -22,6 +22,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useGameStore } from '../store/gameStore';
 import { useProgressStore } from '../store/progressStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GameGrid } from '../components/GameGrid';
 import { ScoreBar } from '../components/ScoreBar';
 import { NextBlockPreview } from '../components/NextBlockPreview';
@@ -37,6 +38,7 @@ interface GameScreenProps {
 
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => {
   const { levelId } = route.params;
+  const insets = useSafeAreaInsets();
 
   const {
     grid,
@@ -75,6 +77,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
     audioManager.playMusic('gameplay');
     return () => {
       audioManager.stopMusic();
+      setGameStatus('idle'); // Reset game status to idle so it doesn't leak to the next level mount!
     };
   }, [levelId]);
 
@@ -195,7 +198,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   }
 
   return (
-    <LinearGradient colors={GRADIENTS.game as [string, string]} style={styles.container}>
+    <LinearGradient colors={GRADIENTS.game as [string, string]} style={[styles.container, { paddingTop: Math.max(insets.top, 16) }]}>
       {/* HUD */}
       <View style={styles.hudContainer}>
         <ScoreBar
@@ -232,7 +235,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
       </View>
 
       {/* Level description */}
-      <View style={styles.descriptionContainer}>
+      <View style={[styles.descriptionContainer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <Text style={styles.descriptionText}>
           {currentLevel.description}
         </Text>

@@ -169,13 +169,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           <Text style={styles.sectionTitle}>ℹ️ ABOUT</Text>
           <View style={styles.aboutCard}>
             <Text style={styles.aboutTitle}>X2 Global Blocks</Text>
-            <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+            <Text style={styles.aboutVersion}>Version 4.0.0</Text>
             <View style={styles.aboutDivider} />
             <Text style={styles.aboutStudio}>AP Programming Tech</Text>
             <Text style={styles.aboutTagline}>Reach New Goals ✨</Text>
             <View style={styles.aboutDivider} />
             <Text style={styles.aboutCopy}>
-              © 2025 AP Programming Tech{'\n'}
+              © 2026 AP Programming Tech{'\n'}
               All rights reserved.
             </Text>
           </View>

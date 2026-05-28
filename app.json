@@ -2,7 +2,7 @@
   "expo": {
     "name": "X2 Global Blocks",
     "slug": "x2-global-blocks",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.approgrammingtech.x2globalblocks",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "backgroundColor": "#0a0e27",
         "foregroundImage": "./assets/android-icon-foreground.png"
