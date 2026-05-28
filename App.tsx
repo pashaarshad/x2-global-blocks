@@ -1,6 +1,5 @@
 // X2 Global Blocks — Main App Entry
 // Navigation setup with all screens
-import 'react-native-reanimated';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -20,7 +19,7 @@ export type RootStackParamList = {
   Home: undefined;
   LevelSelect: undefined;
   Game: { levelId: number };
-  Victory: { levelId: number; score: number; stars: number; highestTile: number };
+  Victory: { levelId: number; score: number; stars: number; highestTile: number; winBonus?: number };
   GameOver: { levelId: number; score: number; highestTile: number; goalTile: number };
   Settings: undefined;
 };
