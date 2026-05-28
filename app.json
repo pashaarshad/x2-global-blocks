@@ -2,7 +2,7 @@
   "expo": {
     "name": "X2 Global Blocks",
     "slug": "x2-global-blocks",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -14,16 +14,15 @@
     },
     "android": {
       "package": "com.approgrammingtech.x2globalblocks",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#0a0e27",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": []
   }
