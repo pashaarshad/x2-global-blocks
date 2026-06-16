@@ -18,6 +18,11 @@
     "android": {
       "package": "com.approgrammingtech.x2globalblocks",
       "versionCode": 6,
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#0a0e27",
         "foregroundImage": "./assets/android-icon-foreground.png"

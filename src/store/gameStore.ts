@@ -33,7 +33,7 @@ interface GameState {
 
   // Actions
   initLevel: (levelId: number) => void;
-  performDrop: (col: number) => void;
+  performDrop: (col: number) => boolean;
   setGameStatus: (status: GameStatus) => void;
   decrementTime: () => void;
   resetGame: () => void;
@@ -78,7 +78,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       nextBlock: getRandomBlock(level.blockPool),
       comboCount: 0,
       gameStatus: 'playing',
-      highestTile: 0,
+      highestTile: getHighestValue(grid),
       currentLevel: level,
       starsEarned: 0,
     });
@@ -86,7 +86,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   performDrop: (col: number) => {
     const state = get();
-    if (state.gameStatus !== 'playing' || !state.currentLevel) return;
+    if (state.gameStatus !== 'playing' || !state.currentLevel) return false;
 
     // Check move limit
     if (
@@ -94,14 +94,14 @@ export const useGameStore = create<GameState>((set, get) => ({
       state.movesUsed >= state.currentLevel.moveLimit
     ) {
       set({ gameStatus: 'lost' });
-      return;
+      return false;
     }
 
     const result = dropBlock(state.grid, col, state.currentBlock);
 
     if (result.landedRow === -1) {
       // Column is full, invalid move — do nothing
-      return;
+      return false;
     }
 
     const newScore = state.score + result.scoreGained;
@@ -122,7 +122,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         currentBlock: state.nextBlock,
         nextBlock: getRandomBlock(state.currentLevel.blockPool),
       });
-      return;
+      return true;
     }
 
     // Check game over (grid full)
@@ -135,7 +135,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         highestTile: newHighest,
         gameStatus: 'lost',
       });
-      return;
+      return true;
     }
 
     // Check move limit
@@ -153,7 +153,7 @@ export const useGameStore = create<GameState>((set, get) => ({
           highestTile: newHighest,
           gameStatus: 'lost',
         });
-        return;
+        return true;
       }
     }
 
@@ -167,6 +167,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       currentBlock: state.nextBlock,
       nextBlock: getRandomBlock(state.currentLevel.blockPool),
     });
+    return true;
   },
 
   setGameStatus: (status: GameStatus) => {

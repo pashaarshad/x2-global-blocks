@@ -19,6 +19,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { APP_STUDIO_NAME, APP_TAGLINE, APP_VERSION } from '../constants/appInfo';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useProgressStore } from '../store/progressStore';
 import { audioManager } from '../engine/audioManager';
@@ -173,7 +174,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Animated.View style={[styles.titleGlow, glowStyle]} />
         <Text style={styles.titleX2}>X2</Text>
         <Text style={styles.titleGlobal}>GLOBAL BLOCKS</Text>
-        <Text style={styles.tagline}>✨ Reach New Goals ✨</Text>
+        <Text style={styles.tagline}>✨ {APP_TAGLINE} ✨</Text>
       </Animated.View>
 
       {/* High score */}
@@ -240,8 +241,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>AP Programming Tech</Text>
-        <Text style={styles.versionText}>v1.0.0</Text>
+        <Text style={styles.footerText}>{APP_STUDIO_NAME}</Text>
+        <Text style={styles.versionText}>v{APP_VERSION}</Text>
       </View>
     </LinearGradient>
   );

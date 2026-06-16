@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { APP_COPYRIGHT, APP_NAME, APP_STUDIO_NAME, APP_TAGLINE, APP_VERSION } from '../constants/appInfo';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useProgressStore } from '../store/progressStore';
 import { audioManager } from '../engine/audioManager';
@@ -168,14 +169,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ℹ️ ABOUT</Text>
           <View style={styles.aboutCard}>
-            <Text style={styles.aboutTitle}>X2 Global Blocks</Text>
-            <Text style={styles.aboutVersion}>Version 4.0.0</Text>
+            <Text style={styles.aboutTitle}>{APP_NAME}</Text>
+            <Text style={styles.aboutVersion}>Version {APP_VERSION}</Text>
             <View style={styles.aboutDivider} />
-            <Text style={styles.aboutStudio}>AP Programming Tech</Text>
-            <Text style={styles.aboutTagline}>Reach New Goals ✨</Text>
+            <Text style={styles.aboutStudio}>{APP_STUDIO_NAME}</Text>
+            <Text style={styles.aboutTagline}>{APP_TAGLINE} ✨</Text>
             <View style={styles.aboutDivider} />
             <Text style={styles.aboutCopy}>
-              © 2026 AP Programming Tech{'\n'}
+              {APP_COPYRIGHT}{'\n'}
               All rights reserved.
             </Text>
           </View>

@@ -7,16 +7,15 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
-  Alert,
   Modal,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
   withSequence,
-  runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS } from '../constants/colors';
@@ -60,6 +59,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   } = useGameStore();
 
   const completeLevel = useProgressStore((s) => s.completeLevel);
+  const hapticsEnabled = useProgressStore((s) => s.settings.hapticsEnabled);
 
   const [highlightCol, setHighlightCol] = useState<number | undefined>(undefined);
   const [showPauseModal, setShowPauseModal] = useState(false);
@@ -97,6 +97,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   useEffect(() => {
     if (gameStatus === 'won') {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (hapticsEnabled) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      }
       const winBonus = currentLevel?.winPoints || 50;
       const totalScore = score + winBonus;
       completeLevel(levelId, totalScore, starsEarned);
@@ -111,6 +114,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
       }, 600);
     } else if (gameStatus === 'lost') {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (hapticsEnabled) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      }
       audioManager.stopMusic();
       audioManager.playSfx('gameover');
       setTimeout(() => {
@@ -122,7 +128,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
         });
       }, 600);
     }
-  }, [gameStatus]);
+  }, [completeLevel, currentLevel?.goalTile, currentLevel?.winPoints, gameStatus, highestTile, hapticsEnabled, levelId, navigation, score, starsEarned]);
 
   // Show combo message
   useEffect(() => {
@@ -130,6 +136,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
       audioManager.playSfx('merge');
     }
     if (comboCount >= 2) {
+      if (hapticsEnabled) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      }
       audioManager.playSfx('combo');
       const msg = getComboMessage(comboCount);
       setComboMessage(msg);
@@ -143,16 +152,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
         withTiming(0, { duration: 300 })
       );
     }
-  }, [comboCount]);
+  }, [comboCount, comboOpacity, comboScale, hapticsEnabled]);
 
   const handleColumnPress = useCallback(
     (col: number) => {
       if (gameStatus !== 'playing') return;
-      performDrop(col);
-      audioManager.playSfx('drop');
+      const didDrop = performDrop(col);
+      if (didDrop) {
+        audioManager.playSfx('drop');
+        if (hapticsEnabled) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        }
+      }
       setHighlightCol(undefined);
     },
-    [gameStatus, performDrop]
+    [gameStatus, hapticsEnabled, performDrop]
   );
 
   const handlePause = useCallback(() => {
@@ -176,7 +190,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
     audioManager.playSfx('button');
     setShowPauseModal(false);
     resetGame();
-  }, []);
+    audioManager.resumeMusic();
+  }, [resetGame]);
 
   const handleQuit = useCallback(() => {
     audioManager.playSfx('button');

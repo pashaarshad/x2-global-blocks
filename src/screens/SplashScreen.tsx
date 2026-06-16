@@ -12,6 +12,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { APP_STUDIO_NAME, APP_TAGLINE } from '../constants/appInfo';
 import { COLORS, GRADIENTS } from '../constants/colors';
 import { useProgressStore } from '../store/progressStore';
 
@@ -95,8 +96,23 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const glowOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Load saved progress
-    loadProgress();
+    let isMounted = true;
+    let navigationTimer: ReturnType<typeof setTimeout> | null = null;
+    const splashDurationMs = 4500;
+    const startedAt = Date.now();
+
+    const bootstrap = async () => {
+      await loadProgress();
+
+      const remainingDelay = Math.max(0, splashDurationMs - (Date.now() - startedAt));
+      navigationTimer = setTimeout(() => {
+        if (isMounted) {
+          navigation.replace('Home');
+        }
+      }, remainingDelay);
+    };
+
+    void bootstrap();
 
     // Sequence of animations
     // 1. Studio name appears
@@ -123,13 +139,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     // 6. Loading bar
     loadingWidth.value = withDelay(1000, withTiming(100, { duration: 3500, easing: Easing.out(Easing.quad) }));
 
-    // Navigate after splash
-    const timer = setTimeout(() => {
-      navigation.replace('Home');
-    }, 4500);
-
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      isMounted = false;
+      if (navigationTimer) clearTimeout(navigationTimer);
+    };
+  }, [loadProgress, navigation]);
 
   const studioStyle = useAnimatedStyle(() => ({
     transform: [{ scale: studioScale.value }],
@@ -178,7 +192,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       <View style={styles.content}>
         {/* Studio name */}
         <Animated.View style={[styles.studioContainer, studioStyle]}>
-          <Text style={styles.studioName}>AP Programming Tech</Text>
+          <Text style={styles.studioName}>{APP_STUDIO_NAME}</Text>
         </Animated.View>
 
         {/* Presents */}
@@ -195,7 +209,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
         {/* Tagline */}
         <Animated.Text style={[styles.tagline, taglineStyle]}>
-          ✨ Reach New Goals ✨
+          ✨ {APP_TAGLINE} ✨
         </Animated.Text>
       </View>
 

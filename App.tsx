@@ -1,11 +1,12 @@
 // X2 Global Blocks — Main App Entry
 // Navigation setup with all screens
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { audioManager } from './src/engine/audioManager';
 import { SplashScreen } from './src/screens/SplashScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LevelSelectScreen } from './src/screens/LevelSelectScreen';
@@ -13,6 +14,7 @@ import { GameScreen } from './src/screens/GameScreen';
 import { VictoryScreen } from './src/screens/VictoryScreen';
 import { GameOverScreen } from './src/screens/GameOverScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { useProgressStore } from './src/store/progressStore';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -27,6 +29,16 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+  const settings = useProgressStore((state) => state.settings);
+  const isLoaded = useProgressStore((state) => state.isLoaded);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    audioManager.setSfxEnabled(settings.soundEnabled);
+    audioManager.setMusicEnabled(settings.musicEnabled);
+  }, [isLoaded, settings.musicEnabled, settings.soundEnabled]);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar

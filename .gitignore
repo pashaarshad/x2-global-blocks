@@ -13,6 +13,7 @@ expo-env.d.ts
 .kotlin/
 *.orig.*
 *.jks
+*.keystore
 *.p8
 *.p12
 *.key
@@ -32,10 +33,8 @@ yarn-error.*
 
 # local env files
 .env*.local
+android/keystore.properties
+android/local.properties
 
 # typescript
 *.tsbuildinfo
-
-# generated native folders
-/ios
-/android
